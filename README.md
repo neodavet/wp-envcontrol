@@ -27,10 +27,10 @@ Environment Control provides intelligent environment detection and serves as a f
 
 ## 📋 Requirements
 
-- **WordPress**: 6.8 or higher
-- **PHP**: 5.6 or higher
+- **WordPress**: 6.9 or higher
+- **PHP**: 7.0 or higher
 - **Permissions**: Administrator privileges for configuration
-- **Tested up to**: WordPress 6.8
+- **Tested up to**: WordPress 6.9
 
 ## 🛠️ Installation
 

@@ -1,16 +1,16 @@
 <?php
 /**
- * Plugin Name: Environment Control
+ * Plugin Name: Env Control
  * Description: Control WordPress settings based on environment detection (production vs non-production). Includes search engine indexing control and provides a framework for implementing custom environment-based settings.
  * Author: neodavet
  * Author URI: https://neodavet.github.io/davetportfolio/
  * Version: 1.0.0
- * Text Domain: envcontrol
+ * Text Domain: env-control
  * Tags: environment, production, development, staging, settings, indexing, framework
  * Requires at least: 6.8
- * Tested up to: 6.8
+ * Tested up to: 6.9
 
- * Requires PHP: 5.6
+ * Requires PHP: 7.0
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -263,7 +263,7 @@ function env_control_admin_page() {
  * Add settings link to plugins page
  */
 function env_control_settings_link($links) {
-    $settings_link = '<a href="' . admin_url('tools.php?page=env-control') . '">' . __('Settings', 'envcontrol') . '</a>';
+    $settings_link = '<a href="' . admin_url('tools.php?page=env-control') . '">' . __('Settings', 'env-control') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 }
@@ -301,28 +301,32 @@ add_filter('pre_option_blog_public', function($default) {
 
 /**
  * Display a notice in the admin area if we're not in production.
+ * This notice self-dismisses when the environment becomes production.
  */
 add_action('admin_notices', function() {
+    // Only show on plugin settings page and dashboard to avoid overwhelming users
+    $current_screen = get_current_screen();
+    if (!in_array($current_screen->id, array('dashboard', 'tools_page_env-control'))) {
+        return;
+    }
+    
     if (!env_control_is_production_environment()) {
-        $message = '<strong>' . __('Environment Control Notice:', 'envcontrol') . '</strong> ';
+        $message = '<strong>' . __('Environment Control Notice:', 'env-control') . '</strong> ';
         
         if (defined('WP_ENV') && WP_ENV !== 'production') {
             /* translators: %s: The current WP_ENV value (e.g., development, staging) */
-            $message .= sprintf(__('WP_ENV is set to %s.', 'envcontrol'), '<code>' . esc_html(WP_ENV) . '</code>');
+            $message .= sprintf(__('WP_ENV is set to %s.', 'env-control'), '<code>' . esc_html(WP_ENV) . '</code>');
         } else {
-            $message .= __('Current URL does not match production URL.', 'envcontrol');
+            $message .= __('Current URL does not match production URL.', 'env-control');
         }
         
-        $message .= ' ' . __('Search engine indexing is automatically disabled.', 'envcontrol');
+        $message .= ' ' . __('Search engine indexing is automatically disabled.', 'env-control');
+        $message .= ' <a href="' . admin_url('tools.php?page=env-control') . '">' . __('Configure Environment Control', 'env-control') . '</a>';
         
         echo '<div class="notice notice-info"><p>' . wp_kses_post($message) . '</p></div>';
     }
 });
 
-// Backward compatibility function for any existing code that might use this
-function is_production_environment() {
-    return env_control_is_production_environment();
-}
 
 /**
  * Plugin activation hook

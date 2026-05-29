@@ -1,4 +1,4 @@
-# Environment Control - Release Notes
+# Env - Release Notes
 
 ## Version 1.0.0 - Initial Release
 
